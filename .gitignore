@@ -1,0 +1,6 @@
+*.class
+*.pref
+bin/*
+.settings/*
+*.log
+
