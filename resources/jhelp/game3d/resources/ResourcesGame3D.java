@@ -6,8 +6,11 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 
+import jhelp.engine.Object3D;
 import jhelp.engine.Texture;
+import jhelp.engine.io.obj.ObjLoader;
 import jhelp.sound.JHelpSound;
 import jhelp.sound.SoundFactory;
 import jhelp.util.cache.Cache;
@@ -83,12 +86,16 @@ public class ResourcesGame3D
    private static final String            PATH_FACES          = "images/faces/";
    /** Relative path for icons */
    private static final String            PATH_ICONS          = "images/icons/";
+   /** Relative path for models */
+   private static final String            PATH_MODELS         = "models/";
    /** Relative path for ambient sounds */
    private static final String            PATH_SOUNDS_AMBIENT = "sounds/ambient/";
    /** Relative path for FX sounds */
    private static final String            PATH_SOUNDS_FX      = "sounds/fx/";
    /** Relative path for textures */
    private static final String            PATH_TEXTURES       = "images/textures/";
+   /** Relative path for eyes */
+   private static final String            PATH_TEXTURES_EYES  = "images/textures/eyes/";
    /** Access to texts */
    private static final ResourceText      RESOURCE_TEXT;
    /** Access to resources */
@@ -165,6 +172,29 @@ public class ResourcesGame3D
    }
 
    /**
+    * Obtain texture for eyes
+    * 
+    * @param name
+    *           Eyes image name
+    * @return Texture
+    */
+   private static Texture obtainEyeTexture(final String name)
+   {
+      final String path = ResourcesGame3D.PATH_TEXTURES_EYES + name;
+      final Texture texture = Texture.obtainTexture(path);
+
+      if(texture != null)
+      {
+         return texture;
+      }
+
+      JHelpImage image = ResourcesGame3D.obtainImage(path);
+      image = image.rotate90();
+      image = image.extractSubImage(0, image.getHeight() >> 2, image.getWidth(), image.getHeight() >> 1);
+      return new Texture(path, image);
+   }
+
+   /**
     * Obtain an image
     * 
     * @param path
@@ -190,6 +220,68 @@ public class ResourcesGame3D
    private static JHelpImage obtainImage(final String path, final int width, final int height)
    {
       return ResourcesGame3D.CACHE_IMAGES.get(path, new CacheImageElement(path, width, height));
+   }
+
+   /**
+    * Load an OBJ model
+    * 
+    * @param name
+    *           OBJ file name
+    * @return Loaded object
+    */
+   public static Object3D loadModel(final String name)
+   {
+      return ResourcesGame3D.loadModel(name, true);
+   }
+
+   /**
+    * Load an OBJ model
+    * 
+    * @param name
+    *           OBJ file name
+    * @param reverseNormal
+    *           Indicates if have to reverse normals
+    * @return Loaded object
+    */
+   public static Object3D loadModel(final String name, final boolean reverseNormal)
+   {
+      InputStream inputStream = null;
+
+      try
+      {
+         inputStream = ResourcesGame3D.RESOURCES.obtainResourceStream(ResourcesGame3D.PATH_MODELS + name);
+         return ObjLoader.loadObj(null, inputStream, reverseNormal);
+      }
+      catch(final Exception exception)
+      {
+         Debug.printException(exception, "Failed to load model : ", name);
+         return null;
+      }
+      finally
+      {
+         if(inputStream != null)
+         {
+            try
+            {
+               inputStream.close();
+            }
+            catch(final Exception exception)
+            {
+            }
+         }
+      }
+   }
+
+   /**
+    * Obtain texture for eyes
+    * 
+    * @param eyesTexture
+    *           Eyes texture
+    * @return Texture to use
+    */
+   public static Texture obtainEyeTexture(final EyesTexture eyesTexture)
+   {
+      return ResourcesGame3D.obtainEyeTexture(eyesTexture.getName());
    }
 
    /**

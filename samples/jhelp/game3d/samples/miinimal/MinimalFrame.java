@@ -3,12 +3,16 @@ package jhelp.game3d.samples.miinimal;
 import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
 
-import jhelp.engine.Material;
+import jhelp.engine.Animation;
+import jhelp.engine.JHelpSceneRenderer;
 import jhelp.engine.Node;
-import jhelp.engine.NodeWithMaterial;
 import jhelp.engine.Scene;
-import jhelp.engine.geom.Ribbon3D;
+import jhelp.engine.anim.AnimationPause;
+import jhelp.engine.anim.MultiAnimation;
 import jhelp.engine.gui.ActionKey;
+import jhelp.engine.util.PositionNode;
+import jhelp.game3d.models.BodyPart;
+import jhelp.game3d.models.CharacterHumanFemale;
 import jhelp.game3d.resources.ResourcesGame3D;
 import jhelp.game3d.ui.JHelpGame3DFrame;
 import jhelp.game3d.ui.OptionPaneButtons;
@@ -26,10 +30,17 @@ public class MinimalFrame
 {
    /** Dialog for user confirm he want exit or not */
    private static final int DIALOG_EXIT_NOW = 0;
+   /** Last manipulated mode change time */
+   private long             changeTime;
    /** Indicates if user agreed to exit */
    private boolean          confirmedExit;
+   /** Indicates if manipulate the character */
+   private boolean          manipulateNode  = true;
+
    /** Manipulated node sample */
-   private final Node       node;
+   private Node             node;
+   /** Mirror camera position */
+   private PositionNode     position;
 
    /**
     * Create a new instance of MinimalFrame
@@ -41,16 +52,6 @@ public class MinimalFrame
          throws HeadlessException
    {
       super("Minimal");
-
-      this.confirmedExit = false;
-      this.node = new Ribbon3D(1);
-      final Material material = Material.obtainMaterialOrCreate("Main");
-      material.setTextureDiffuse(ResourcesGame3D.obtainTexture("emerald_bk.jpg"));
-      ((NodeWithMaterial) this.node).setMaterial(material);
-      this.node.setPosition(0, 0, -7);
-      final Scene scene = this.getSceneRenderer().getScene();
-      scene.add(this.node);
-      scene.flush();
    }
 
    /**
@@ -75,32 +76,93 @@ public class MinimalFrame
             this.startCaptureNextKey();
          break;
          case UP:
-            this.node.translate(0, 0.1f, 0);
+            if(this.manipulateNode)
+            {
+               this.node.translate(0, 1, 0);
+            }
+            else
+            {
+               this.position.y += 1;
+            }
          break;
          case DOWN:
-            this.node.translate(0, -0.1f, 0);
+            if(this.manipulateNode)
+            {
+               this.node.translate(0, -1, 0);
+            }
+            else
+            {
+               this.position.y -= 1;
+            }
          break;
          case LEFT:
-            this.node.translate(-0.1f, 0, 0);
+            if(this.manipulateNode)
+            {
+               this.node.translate(-1, 0, 0);
+            }
+            else
+            {
+               this.position.x -= 1;
+            }
          break;
          case RIGHT:
-            this.node.translate(0.1f, 0, 0);
+            if(this.manipulateNode)
+            {
+               this.node.translate(1, 0, 0);
+            }
+            else
+            {
+               this.position.x += 1;
+            }
          break;
          case FORWARD:
-            this.node.translate(0, 0, 0.1f);
+            if(this.manipulateNode)
+            {
+               this.node.translate(0, 0, 1);
+            }
+            else
+            {
+               this.position.z += 1;
+            }
          break;
          case BACKWARD:
-            this.node.translate(0, 0, -0.1f);
+            if(this.manipulateNode)
+            {
+               this.node.translate(0, 0, -1);
+            }
+            else
+            {
+               this.position.z -= 1;
+            }
          break;
          case ROTATE_LEFT:
-            this.node.rotateAngleX(1f);
+            this.node.rotateAngleY(1f);
          break;
          case ROTATE_RIGHT:
-            this.node.rotateAngleX(-1f);
+            this.node.rotateAngleY(-1f);
+         break;
+         case EXIT:
+            this.closeGame();
+         break;
+         case CANCEL:
+            if((System.currentTimeMillis() - this.changeTime) > 2048)
+            {
+               this.changeTime = System.currentTimeMillis();
+               this.manipulateNode = !this.manipulateNode;
+            }
          break;
          default:
          break;
       }
+
+      // if(this.manipulateNode)
+      // {
+      // Debug.println(DebugLevel.INFORMATION, new PositionNode(this.node));
+      // }
+      // else
+      // {
+      // Debug.println(DebugLevel.INFORMATION, this.position);
+      // }
    }
 
    /**
@@ -137,6 +199,95 @@ public class MinimalFrame
    {
       // {@todo} TODO Implements dialogClose
       Debug.printTodo("Implements dialogClose");
+   }
+
+   /**
+    * Called when game initialized <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @param sceneRenderer
+    *           Scene renderer
+    * @param scene
+    *           Scene where draw
+    * @see jhelp.engine.gui.Game3DFrame#initializeGame(jhelp.engine.JHelpSceneRenderer, jhelp.engine.Scene)
+    */
+   @Override
+   protected void initializeGame(final JHelpSceneRenderer sceneRenderer, final Scene scene)
+   {
+      this.confirmedExit = false;
+      final CharacterHumanFemale female = new CharacterHumanFemale();
+      female.setDressScale(0.5f);
+      final MultiAnimation animation = new MultiAnimation(true);
+      animation.addAnimation(female.obtainRunAnimation());
+      animation.addAnimation(female.obtainRunAnimation());
+      animation.addAnimation(female.obtainRunAnimation());
+      animation.addAnimation(female.obtainPutAtStartPositionAnimation(25));
+      animation.addAnimation(female.obtainWalkFastAnimation());
+      animation.addAnimation(female.obtainWalkFastAnimation());
+      animation.addAnimation(female.obtainWalkFastAnimation());
+      animation.addAnimation(female.obtainPutAtStartPositionAnimation(25));
+      animation.addAnimation(female.obtainWalkNormalAnimation());
+      animation.addAnimation(female.obtainWalkNormalAnimation());
+      animation.addAnimation(female.obtainWalkNormalAnimation());
+      animation.addAnimation(female.obtainPutAtStartPositionAnimation(25));
+      animation.addAnimation(female.obtainWalkSlowAnimation());
+      animation.addAnimation(female.obtainWalkSlowAnimation());
+      animation.addAnimation(female.obtainWalkSlowAnimation());
+      animation.addAnimation(female.obtainPutAtStartPositionAnimation(25));
+
+      final int nb = female.numberOfSpecificAnimation();
+      Animation specific;
+
+      for(int i = 0; i < nb; i++)
+      {
+         specific = female.obtainSpecificAnimation(i);
+         animation.addAnimation(specific);
+         animation.addAnimation(specific);
+         animation.addAnimation(specific);
+         animation.addAnimation(female.obtainPutAtStartPositionAnimation(25));
+      }
+
+      animation.addAnimation(new AnimationPause(25));
+
+      this.node = female.getCharacterNode();
+      female.setTexture(BodyPart.DRESS, ResourcesGame3D.obtainTexture("emerald_bk.jpg"));
+      female.obtainMaterial(BodyPart.DRESS).setTextureSpheric(ResourcesGame3D.obtainTexture("emerald_bk.jpg"));
+      female.obtainMaterial(BodyPart.DRESS).setSphericRate(0.5f);
+      this.node.setPosition(-4.0f, -63.0f, -529.0f);
+      scene.add(this.node);
+
+      // Add mirror for example, for see performance impact, remove comments bellow (and do necessary imports)
+      // Plane planeMirior = new Plane(false, true);
+      // planeMirior.setPosition(0.0f, -133.0f, -617.0f);
+      // planeMirior.setAngleX(-90);
+      // planeMirior.scale(1000);
+      // scene.add(planeMirior);
+      // this.position = new PositionNode(1.0f, 568.0f, -858.0f, -90, 0, 0);
+      // Miror miror = new Miror(planeMirior, this.position);
+      // miror.backgroundRed = 0.5f;
+      // miror.backgroundGreen = 0.6f;
+      // miror.backgroundBlue = 0.8f;
+      // miror.backgroundAlpha = 0.5f;
+      // sceneRenderer.addMiror(miror);
+
+      // If your computer not on its knee, you can try remove comments bellow also, to see effect two mirrors see each other
+      // planeMirior = new Plane(false, true);
+      // planeMirior.setPosition(0.0f, 133.0f, -617.0f);
+      // planeMirior.setAngleX(90);
+      // planeMirior.scale(1000);
+      // scene.add(planeMirior);
+      // this.position = new PositionNode(1.0f, -568.0f, -858.0f, 90, 0, 0);
+      // miror = new Miror(planeMirior, this.position);
+      // miror.backgroundRed = 0.5f;
+      // miror.backgroundGreen = 0.6f;
+      // miror.backgroundBlue = 0.8f;
+      // miror.backgroundAlpha = 0.5f;
+      // sceneRenderer.addMiror(miror);
+
+      sceneRenderer.playAnimation(animation);
+      // sceneRenderer.setShowFPS(true);
    }
 
    /**
