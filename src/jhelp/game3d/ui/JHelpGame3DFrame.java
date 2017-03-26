@@ -40,7 +40,7 @@ import jhelp.util.gui.JHelpTextAlign;
 import jhelp.util.gui.UtilGUI;
 import jhelp.util.gui.alphabet.Alphabet;
 import jhelp.util.gui.alphabet.AlphabetBlue16x16;
-import jhelp.util.gui.alphabet.AlphabetGraphitti;
+import jhelp.util.gui.alphabet.AlphabetGraffiti;
 import jhelp.util.gui.alphabet.AlphabetGreen8x16;
 import jhelp.util.gui.alphabet.AlphabetOrange16x16;
 import jhelp.util.gui.alphabet.AlphabetText;
@@ -195,7 +195,7 @@ public abstract class JHelpGame3DFrame
       @Override
       public void joystickAxisActivated(final Joystick joystick, final Axis axis)
       {
-         if(this.gameMode == false)
+         if(!this.gameMode)
          {
             this.consumeAll();
 
@@ -250,7 +250,7 @@ public abstract class JHelpGame3DFrame
       @Override
       public void joystickAxisReleased(final Joystick joystick, final Axis axis)
       {
-         if(this.gameMode == false)
+         if(!this.gameMode)
          {
             this.consumeAll();
             return;
@@ -278,7 +278,7 @@ public abstract class JHelpGame3DFrame
       @Override
       public void joystickButtonPressed(final Joystick joystick, final Button button)
       {
-         if(this.gameMode == false)
+         if(!this.gameMode)
          {
             this.consumeAll();
 
@@ -337,7 +337,7 @@ public abstract class JHelpGame3DFrame
       @Override
       public void joystickButtonReleased(final Joystick joystick, final Button button)
       {
-         if(this.gameMode == false)
+         if(!this.gameMode)
          {
             this.consumeAll();
             return;
@@ -550,7 +550,7 @@ public abstract class JHelpGame3DFrame
       this.optionPaneAlphabetText = new AlphabetText(AlphabetGreen8x16.ALPHABET_GREEN8X16, dimension.width, 16, "", JHelpTextAlign.CENTER, 0xFF0A7E07,
             0x800A7E07);
       final JHelpImage image = this.optionPaneAlphabetText.getImage();
-      this.optionPaneButtonsAlphabet = AlphabetGraphitti.NORMAL;
+      this.optionPaneButtonsAlphabet = AlphabetGraffiti.NORMAL;
       dimension = this.optionPaneButtonsAlphabet.getCharacterDimension();
       this.optionPaneTexture = new Texture("Game3DOptionPane", image.getWidth(), image.getHeight() + dimension.height + 8);
       this.optionPaneTexture.setAutoFlush(false);
@@ -604,7 +604,7 @@ public abstract class JHelpGame3DFrame
          throw new NullPointerException("text musn't be null");
       }
 
-      if(optionPaneButtons.validForSpecifyOptionPaneButtons() == false)
+      if(!optionPaneButtons.validForSpecifyOptionPaneButtons())
       {
          throw new IllegalArgumentException(optionPaneButtons + " not valid");
       }
@@ -676,19 +676,19 @@ public abstract class JHelpGame3DFrame
       y >>= 1;
       OptionPaneButtons optionPaneButtons;
 
-      if(this.okArea.contains(x, y) == true)
+      if(this.okArea.contains(x, y))
       {
          optionPaneButtons = OptionPaneButtons.OK;
       }
-      else if(this.yesArea.contains(x, y) == true)
+      else if(this.yesArea.contains(x, y))
       {
          optionPaneButtons = OptionPaneButtons.YES;
       }
-      else if(this.noArea.contains(x, y) == true)
+      else if(this.noArea.contains(x, y))
       {
          optionPaneButtons = OptionPaneButtons.NO;
       }
-      else if(this.cancelArea.contains(x, y) == true)
+      else if(this.cancelArea.contains(x, y))
       {
          optionPaneButtons = OptionPaneButtons.CANCEL;
       }
@@ -860,12 +860,12 @@ public abstract class JHelpGame3DFrame
    @Override
    public final void actionKey(final ActionKey actionKey)
    {
-      if(this.dialog.isVisible() == true)
+      if(this.dialog.isVisible())
       {
          switch(actionKey)
          {
             case ACTION:
-               if(this.dialogTexture.hasNext() == true)
+               if(this.dialogTexture.hasNext())
                {
                   this.dialogTexture.next();
                }
@@ -875,7 +875,7 @@ public abstract class JHelpGame3DFrame
                }
             break;
             case CANCEL:
-               if(this.dialogTexture.hasPrevious() == true)
+               if(this.dialogTexture.hasPrevious())
                {
                   this.dialogTexture.previous();
                }
@@ -935,7 +935,7 @@ public abstract class JHelpGame3DFrame
 
       this.cursorVisibility = visible;
 
-      if(visible == true)
+      if(visible)
       {
          this.setCursor(ResourcesGame3D.CURSOR_HAND);
       }

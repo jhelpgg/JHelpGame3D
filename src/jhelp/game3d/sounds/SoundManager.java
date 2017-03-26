@@ -257,7 +257,7 @@ public class SoundManager
 
       synchronized(this.playingAmbient)
       {
-         if(this.ambientRing.isEmpty() == true)
+         if(this.ambientRing.isEmpty())
          {
             return;
          }
@@ -280,7 +280,7 @@ public class SoundManager
 
       synchronized(this.playingFX)
       {
-         if(this.fxQueue.isEmpty() == true)
+         if(this.fxQueue.isEmpty())
          {
             return;
          }
@@ -317,7 +317,7 @@ public class SoundManager
          this.ambientRing.add(sound);
       }
 
-      if(this.playingAmbient.get() == false)
+      if(!this.playingAmbient.get())
       {
          ThreadManager.THREAD_MANAGER.doThread(this.taskAmbient, null);
       }
@@ -336,7 +336,7 @@ public class SoundManager
          this.fxQueue.inQueue(sound);
       }
 
-      if(this.playingFX.get() == false)
+      if(!this.playingFX.get())
       {
          ThreadManager.THREAD_MANAGER.doThread(this.taskFX, null);
       }

@@ -187,7 +187,7 @@ public class MinimalFrame
    @Override
    protected boolean canExitNow()
    {
-      if(this.confirmedExit == false)
+      if(!this.confirmedExit)
       {
          this.showOptionPane(ResourcesGame3D.obtainText(ResourcesGame3D.TEXT_EXIT_NOW), OptionPaneButtons.YES_NO, MinimalFrame.DIALOG_EXIT_NOW);
          return false;
@@ -357,7 +357,7 @@ public class MinimalFrame
    @Override
    protected void textTyped(final String text)
    {
-      if("hello".equalsIgnoreCase(text.trim()) == true)
+      if("hello".equalsIgnoreCase(text.trim()))
       {
          this.showCharacterDialog(
                "Hello guy !\nSo you notice me, I thought I was invisible.\nMay be you feel my presence, not see me.\nIn that case I'm impressed by your talent.\nIt means that you may be the one I searched so long time.\nDo you mind if I test your potential ?\nI ask the question just to be polite, but I don't plan to let you the choice.\nSo here we go !",

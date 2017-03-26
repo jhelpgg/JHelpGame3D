@@ -141,11 +141,11 @@ public abstract class CharacterHuman
    static VirtualBox addHumanHeadTo(final Node parent)
    {
       VirtualBox virtualBox = new VirtualBox();
-      final Object3D head = ResourcesGame3D.loadModel("humanFace.obj");
-      final Object3D main = head;
 
-      final Object3D neutral = (Object3D) main.getFirstNode("neutral_main");
-      main.removeChild(neutral);
+       final Object3D neutral = (Object3D) ResourcesGame3D.loadModel("humanFace.obj")
+                                                          .getFirstNode("neutral_main");
+      ResourcesGame3D.loadModel("humanFace.obj")
+                     .removeChild(neutral);
       virtualBox = neutral.getBox();
       final float vy = (virtualBox.getMaxY() + virtualBox.getMinY()) / 2f;
       neutral.recenterObject();
@@ -153,8 +153,10 @@ public abstract class CharacterHuman
       neutral.nodeName = CharacterHuman.HEAD;
       neutral.setPosition(0, vy, 0);
 
-      final Object3D hair = (Object3D) main.getFirstNode("hair_short");
-      main.removeChild(hair);
+      final Object3D hair = (Object3D) ResourcesGame3D.loadModel("humanFace.obj")
+                                                      .getFirstNode("hair_short");
+      ResourcesGame3D.loadModel("humanFace.obj")
+                     .removeChild(hair);
       hair.recenterObject();
       hair.scale(1.1f);
       hair.translate(0, 5f, 0f);
@@ -1804,7 +1806,7 @@ public abstract class CharacterHuman
          final int number = (end - start) / space;
          final JHelpImage imageHair = new JHelpImage(size, size, color);
          imageHair.startDrawMode();
-         final int colorLine = Color.brigthness(color, 1.5);
+         final int colorLine = Color.brightness(color, 1.5);
 
          for(int i = 0, x = start; i < number; i++, x += space)
          {

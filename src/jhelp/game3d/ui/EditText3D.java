@@ -123,7 +123,7 @@ public class EditText3D
     */
    private void updateCursor()
    {
-      this.cursor.setVisible((this.visible == true) && (this.cursorPosition >= 0));
+      this.cursor.setVisible((this.visible) && (this.cursorPosition >= 0));
 
       if(this.cursorPosition >= 0)
       {
@@ -339,7 +339,7 @@ public class EditText3D
          throw new NullPointerException("text musn't be null");
       }
 
-      if((this.text.equals(text) == true) && (this.cursorPosition == cursorPosition))
+      if((this.text.equals(text)) && (this.cursorPosition == cursorPosition))
       {
          return;
       }
@@ -361,6 +361,6 @@ public class EditText3D
    {
       this.visible = visible;
       this.currentNode.setVisibleHierarchy(visible);
-      this.cursor.setVisible((visible == true) && (this.cursorPosition >= 0));
+      this.cursor.setVisible((visible) && (this.cursorPosition >= 0));
    }
 }
